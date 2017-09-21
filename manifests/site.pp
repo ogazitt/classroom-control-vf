@@ -44,8 +44,42 @@ node default {
   #   class { 'my_class': }
   include role::classroom
   
-  file { "/etc/motd" :
-    ensure => file,
-    content => "Hello Steve",
-    }
+  # including the admins.pp in users module
+  include users::admins
+  
+  include skeleton
+
+  # this will pick up $message from hiera
+  include profile::base
+  
+  # classify in console
+  #include nginx
+  #class { "nginx":
+  #  root => '/var/www/html',
+  #}
+  
+  include memcached
+
+  include motd
+
+  include aliases
+  
+  # add conditional logic
+  if $::virtual != 'physical' {
+    $vmname = capitalize($::virtual)
+    notify { "This is a ${vmname} virtual machine.": }
+  }
+  
+#  file { '/etc/motd': 
+#    ensure => file,
+#    owner => 'root',
+#    group => 'root',
+#    mode => '0644',
+#    content => "today I learned how to change state with Puppet.\n"
+#  }
+  
+#  exec { "cowsay 'Welcome to ${::fqdn}!' > /etc/motd":
+#    path => '/usr/bin:/usr/local/bin',
+#    creates => '/etc/motd', 
+#  }
 }
